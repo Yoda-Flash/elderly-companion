@@ -1,0 +1,15 @@
+{
+  "name": "elderly-companion",
+  "version": "1.0.0",
+  "description": "An elderly companion that can be spoken to, share facts, play music, etc.",
+  "main": "llm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "winston": "^3.17.0"
+  },
+  "type": "module"
+}

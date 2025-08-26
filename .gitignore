@@ -1,0 +1,5 @@
+.idea
+node_modules
+venv
+llm.log
+input.log
