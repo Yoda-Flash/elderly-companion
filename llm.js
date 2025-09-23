@@ -11,6 +11,8 @@ const logger = winston.createLogger({
     ],
 });
 
+const WAKE_WORDS = ["hey", "hi", "hello"]
+
 class LLM {
     constructor() {
         this.prompted = false;
@@ -26,10 +28,14 @@ class LLM {
         return `<|begin_of_text|><|start_header_id|>user<|end_header_id|> \n ${prompt} <|eot_id|> \n <|start_header_id|>assistant<|end_header_id|>`;
     }
 
+    greet = async () => {
+        let response = await fetch("https://ai.hackclub.com/hey");
+        process.stdout.write(await response.text() + "\n");
+    }
+
     chat = async (prompt, tokens) => {
         this.prompted = true;
         let response = await fetch("https://ai.hackclub.com/chat/completions", {
-        // let response = await fetch("http://host.docker.internal:8080/completion", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -38,15 +44,18 @@ class LLM {
                 "messages": [{
                     "role": "user",
                     "content": prompt
+                }, {
+                    "role": "system",
+                    "content": "You are a friendly voice assistant. Please answer in a format that can be directly translated into voice - no bold or heading characters needed."
                 }],
-                // stream: true
+                "model": "openai/gpt-oss-120b"
             })
         })
-
         const reader = response.body.getReader()
         const decoder = new TextDecoder("utf-8", {ignoreBOM: true})
         let partialData = '';
         let parsedData = '';
+        let parsedDataArray = [''];
 
         while (true) {
             const {done, value} = await reader.read();
@@ -56,7 +65,7 @@ class LLM {
             try {
                 // parsedData = JSON.parse(JSON.parse(JSON.stringify(partialData))).choices[0].delta.content;
                 parsedData = JSON.parse(JSON.parse(JSON.stringify(partialData))).choices[0].message.content;
-                process.stdout.write(parsedData)
+                process.stdout.write(parsedData);
                 // if (parsedData.includes(".")) {
                 //     let sentences = parsedData.split('.');
                 //     console.log(sentences);
@@ -70,7 +79,11 @@ class LLM {
                     // process.stderr.write(parsedData);
                 // }
             } catch {
-                continue
+                parsedDataArray = JSON.stringify(partialData).split("content\\\":\\\"");
+                if (parsedDataArray[1] !== undefined) {
+                    parsedData = parsedDataArray[1].split("\\\"")[0];
+                    process.stdout.write(parsedData);
+                }
             }
         }
 
@@ -108,8 +121,11 @@ async function main(){
                 running = false;
                 llm.prompted = false;
                 return;
+            } else if (WAKE_WORDS.includes(prompt)) {
+                llm.greet()
+            } else if (prompt.replace(/\s/g, '') !== "") { // Regex for all whitespace
+                llm.chat(prompt, args.values.tokens).catch(err => console.log(err));
             }
-            llm.chat(prompt, args.values.tokens).catch(err => console.log(err));
         });
         llm.prompted = true;
         await llm.prompt_running();
