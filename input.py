@@ -20,7 +20,7 @@ WAKE_WORDS = ["hey", "hi", "hello"]
 class Wake:
     def __init__(self, path):
         self.model = Model(lang="en-us", model_path=path)
-        self.rec = KaldiRecognizer(self.model, TARGET_RATE, str(WAKE_WORDS + ["[unk]"]))
+        self.rec = KaldiRecognizer(self.model, TARGET_RATE, '["hey", "hi", "hello", "[unk]"]')
         self.wake_event = asyncio.Event()
         self.sleep_event = asyncio.Event()
         self.sleep_event.set()
@@ -38,6 +38,7 @@ class Wake:
             result = self.rec.Result()
             text = json.loads(result)["text"]
             if any(wake_word in text.lower() for wake_word in WAKE_WORDS):
+                print(text)
                 self.wake_event.set()
             await asyncio.sleep(0)
 
@@ -81,6 +82,10 @@ async def main(args):
     pa = pyaudio.PyAudio()
 
     path = args.model
+    if args.device is not None:
+        input_device = args.device
+    else:
+        input_device = 0
 
     in_stream = pa.open(rate=IN_RATE, format=pyaudio.paInt16, channels=1, input=True, input_device_index=input_device)
     wake = Wake(path)
