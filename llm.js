@@ -65,7 +65,7 @@ class LLM {
             try {
                 // parsedData = JSON.parse(JSON.parse(JSON.stringify(partialData))).choices[0].delta.content;
                 parsedData = JSON.parse(JSON.parse(JSON.stringify(partialData))).choices[0].message.content;
-                process.stdout.write(parsedData);
+                process.stdout.write(this.cleanUpString(parsedData));
                 // if (parsedData.includes(".")) {
                 //     let sentences = parsedData.split('.');
                 //     console.log(sentences);
@@ -80,15 +80,33 @@ class LLM {
                 // }
             } catch {
                 parsedDataArray = JSON.stringify(partialData).split("content\\\":\\\"");
+                // console.log("Before cleanup: "+ parsedDataArray);
                 if (parsedDataArray[1] !== undefined) {
                     parsedData = parsedDataArray[1].split("\\\"")[0];
-                    process.stdout.write(parsedData);
+                    parsedData = parsedData.slice(0, -1);
+                    process.stdout.write(this.cleanUpString(parsedData));
+                } else if (parsedDataArray[0].charAt(0) !== "{") {
+                    parsedData = parsedDataArray[0].split("\\\"")[0];
+                    parsedData = parsedData.slice(1);
+                    process.stdout.write(this.cleanUpString(parsedData));
                 }
             }
         }
 
         process.stdout.write("\n");
         this.prompted = false;
+    }
+
+    cleanUpString = (parsedData) => {
+        parsedData = parsedData.replaceAll("’", "'");
+        parsedData = parsedData.replaceAll("—", " - ");
+        parsedData = parsedData.replaceAll("‑", "-");
+        parsedData = parsedData.replaceAll("\\\\n", " ");
+        parsedData = parsedData.replaceAll("*", "");
+        parsedData = parsedData.replaceAll("“", "\"");
+        parsedData = parsedData.replaceAll("”", "\"");
+        parsedData = parsedData.replaceAll("{", "");
+        return parsedData;
     }
 }
 
