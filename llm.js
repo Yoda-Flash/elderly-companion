@@ -46,7 +46,7 @@ class LLM {
                     "content": prompt
                 }, {
                     "role": "system",
-                    "content": "You are a friendly voice assistant. Please answer in a format that can be directly translated into voice - no bold or heading characters needed."
+                    "content": "You are a friendly voice assistant. Please answer in 3 sentences maximum, in a format that can be directly translated into voice - no bold or heading characters needed."
                 }],
                 "model": "openai/gpt-oss-120b"
             })
