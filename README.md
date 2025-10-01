@@ -2,7 +2,7 @@
 An elderly companion that can be spoken to, share facts, play music, etc.
 
 ## How To Use
-1. Run __main__.exe to start and run the pipeline
+1. Download and run __main__.exe to start and run the pipeline
 2. Start by saying "hello", "hi", or "hey" into the microphone. 
 If your voice is detected, you should hear a greeting from the LLM in response. 
 3. Ask a question or begin your conversation!
