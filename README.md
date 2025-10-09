@@ -2,7 +2,9 @@
 An elderly companion that can be spoken to, share facts, play music, etc.
 
 ## How To Use
-1. Download and run __main__.exe to start and run the pipeline
+1. Download and run \_\_main\_\_.exe to start and run the pipeline
+
+   Alternative: Clone the Git Repo, create a new venv, install the python requirements from pip requirements.txt, and install the npm requirements from the package-lock.json. Then, run \_\_main\_\_.py to use.
 2. Start by saying "hello", "hi", or "hey" into the microphone. 
 If your voice is detected, you should hear a greeting from the LLM in response. 
 3. Ask a question or begin your conversation!
